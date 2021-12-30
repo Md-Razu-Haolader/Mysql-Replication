@@ -192,65 +192,11 @@ mysql>SHOW SLAVE STATUS\G
 If Replication Breaks:
 ========================
 
-Unlock your db tables with read lock on Primay Server (172.16.172.16):
-
-mysql -p
-
-mysql>USE testRnd;
-
-mysql>UNLOCK TABLES;
-
-mysql>FLUSH TABLES WITH READ LOCK;
-
-In this read lock condition we need to dump the testRnd DB using !!another console!! from Primary server and initiate below command to find out "MASTER_LOG_FILE" and "MASTER_LOG_POS" values
-
-mysql> show master status \G
-
-*************************** 1. row ***************************
-
-            File: mysql-bin.000001
-            
-        Position: 107
-        
-    Binlog_Do_DB: testRnd
-Binlog_Ignore_DB:
-
-1 row in set (0.00 sec)
-
-Than exit from the console to release the read lock.
-
-mysqldump -p testRnd > testRnd_28_12_2021.sql
-
-scp testRnd_28_12_2021.sql 192.168.11.221:/tmp
-
-
-Setup slave replication on Secondary (172.16.172.17):
-
-mysql –p
-
-drop database testRnd;
-
-create database testRnd;
-
-We need to restore the dumped DB "testRnd_28_12_2021.sql" which we got from Master 1.
-
-mysql -p testRnd < testRnd_28_12_2021.sql
-
 mysql> STOP SLAVE;
 
-mysql> RESET SLAVE;
+mysql> SET GLOBAL SQL_SLAVE_SKIP_COUNTER=1; START SLAVE;
 
-mysql> CHANGE MASTER TO MASTER_HOST = '192.168.11.222', MASTER_USER = 'rep', MASTER_PASSWORD = 'rep123', MASTER_LOG_FILE = 'mysql-bin.000003', MASTER_LOG_POS=1783;
-
-mysql> START SLAVE;
-
-mysql> show slave status\G;
-
-
-
-====================================================================
-
-mysql> show slave status\G
+mysql> SHOW SLAVE STATUS \G;
 
 *************************** 1. row ***************************
                
