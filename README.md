@@ -126,6 +126,7 @@ Copy dump sql file to 55 (Slave) server:
 scp testRnd_28_12_2021.sql 192.168.11.221:/tmp
 
 mysql> show master status \G
+
 *************************** 1. row ***************************
             File: mysql-bin.000001
         Position: 107
@@ -204,6 +205,7 @@ mysql>FLUSH TABLES WITH READ LOCK;
 In this read lock condition we need to dump the testRnd DB using !!another console!! from Primary server and initiate below command to find out "MASTER_LOG_FILE" and "MASTER_LOG_POS" values
 
 mysql> show master status \G
+
 *************************** 1. row ***************************
 
             File: mysql-bin.000001
@@ -249,6 +251,7 @@ mysql> show slave status\G;
 ====================================================================
 
 mysql> show slave status\G
+
 *************************** 1. row ***************************
                
                Slave_IO_State: Waiting for master to send event
