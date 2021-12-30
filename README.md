@@ -115,6 +115,15 @@ mysql>FLUSH TABLES WITH READ LOCK;
 
 In this read lock condition we need to dump the testRnd DB using !!another console!! from Master 1 and initiate below command to find out "MASTER_LOG_FILE" and "MASTER_LOG_POS" values
 
+mysql> show master status \G
+
+*************************** 1. row ***************************
+            File: mysql-bin.000001
+        Position: 107
+    Binlog_Do_DB: testRnd
+Binlog_Ignore_DB:
+1 row in set (0.00 sec)
+
 mysqldump -p testRnd > testRnd_28_12_2021.sql
 
 or 
@@ -125,14 +134,6 @@ Copy dump sql file to 55 (Slave) server:
 
 scp testRnd_28_12_2021.sql 192.168.11.221:/tmp
 
-mysql> show master status \G
-
-*************************** 1. row ***************************
-            File: mysql-bin.000001
-        Position: 107
-    Binlog_Do_DB: testRnd
-Binlog_Ignore_DB:
-1 row in set (0.00 sec)
 
 Than exit from the console to release the read lock.
 
@@ -280,7 +281,9 @@ Master_SSL_Verify_Server_Cert: No
   
              Master_Server_Id: 1
              
-1 row in set (0.00 sec)
+**Check below link to fix mysql auto increment issue:**
+
+https://dev.mysql.com/doc/refman/5.7/en/replication-options-source.html
 
 
 
