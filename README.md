@@ -42,19 +42,28 @@ server-id = 1
 replicate-do-db = testRnd
 
 binlog-do-db=testRnd
+
 relay-log = mysql-relay-bin
+
 relay-log = slave-relay.log
+
 relay-log-index = mysql-relay-bin.index
+
 log-error = mysql.err
+
 master-info-file = mysql-master.info
+
 relay-log-info-file = mysql-relay-log.info
+
 log-bin = mysql-bin
 
 
 After saving this changes  restart mysql service
 
 #service mysql restart
+
 Stopping MySQL:                                            [  OK  ]
+
 Starting MySQL:                                            [  OK  ]
 
 
@@ -69,19 +78,24 @@ server-id = 2
 replicate-do-db = testRnd
 
 log-bin = mysql-bin.log
+
 log-bin-index = master-log-bin.index
 
 binlog-do-db = testRnd
 
 relay-log = mysqld-relay-bin
+
 relay-log = slave-relay.log
+
 relay-log-index = slave-relay-log.index
 
 
 After saving this changes  restart mysql service
 
 #service mysql restart
+
 Stopping MySQL:                                            [  OK  ]
+
 Starting MySQL:                                            [  OK  ]
 
 STEP:3
@@ -94,7 +108,9 @@ Enter your MySQL shell:
 Unlock your db tables with read lock on Master 1 server:
 
 mysql>USE testRnd;
+
 mysql>UNLOCK TABLES;
+
 mysql>FLUSH TABLES WITH READ LOCK;
 
 In this read lock condition we need to dump the testRnd DB using !!another console!! from Master 1 and initiate below command to find out "MASTER_LOG_FILE" and "MASTER_LOG_POS" values
@@ -126,17 +142,25 @@ We need to restore the dumped DB "testRnd_28_12_2021.sql" which we got from Mast
 mysql -p testRnd < testRnd_28_12_2021.sql
 
 mysql>USE testRnd;
+
 mysql>UNLOCK TABLES;
+
 mysql>FLUSH TABLES WITH READ LOCK;
+
 mysql> exit;
+
 mysql> mysql -p use testRnd
+
 mysql> STOP SLAVE;
+
 mysql> CHANGE MASTER TO MASTER_HOST = '192.168.11.222', MASTER_USER = 'rep', MASTER_PASSWORD = 'rep123', MASTER_LOG_FILE = 'mysql-bin.000009', MASTER_LOG_POS=154;
 
 Now, start your replication on server:
+
 mysql> START SLAVE;
 
 Check your slave status and your configuration:
+
 mysql>SHOW SLAVE STATUS\G
 
 
@@ -144,9 +168,13 @@ mysql>SHOW SLAVE STATUS\G
 Setup slave replication on master 1 (192.168.11.222):
 
 mysql>USE testRnd;
+
 mysql>UNLOCK TABLES;
+
 mysql>FLUSH TABLES WITH READ LOCK;
+
 mysql> CHANGE MASTER TO MASTER_HOST = '192.168.11.221', MASTER_USER = 'rep', MASTER_PASSWORD = 'rep123', MASTER_LOG_FILE = 'mysql-bin.000009', MASTER_LOG_POS=154;
+
 
 Here MASTER_LOG_FILE = 'mysql-bin.000001', MASTER_LOG_POS=107 these values will be found from Master 2 (192.168.11.221) mysql console command "show master status \G"
 
@@ -154,6 +182,7 @@ mysql> START SLAVE;
 
 
 Check your slave status and your configuration:
+
 mysql>SHOW SLAVE STATUS\G
 
 
@@ -165,18 +194,25 @@ If Replication Breaks:
 Unlock your db tables with read lock on Primay Server (172.16.172.16):
 
 mysql -p
-mysql>USE cc;
+
+mysql>USE testRnd;
+
 mysql>UNLOCK TABLES;
+
 mysql>FLUSH TABLES WITH READ LOCK;
 
-In this read lock condition we need to dump the cc DB using !!another console!! from Primary server and initiate below command to find out "MASTER_LOG_FILE" and "MASTER_LOG_POS" values
+In this read lock condition we need to dump the testRnd DB using !!another console!! from Primary server and initiate below command to find out "MASTER_LOG_FILE" and "MASTER_LOG_POS" values
 
 mysql> show master status \G
 *************************** 1. row ***************************
+
             File: mysql-bin.000001
+            
         Position: 107
-    Binlog_Do_DB: cc,cc
+        
+    Binlog_Do_DB: testRnd
 Binlog_Ignore_DB:
+
 1 row in set (0.00 sec)
 
 Than exit from the console to release the read lock.
@@ -189,17 +225,23 @@ scp testRnd_28_12_2021.sql 192.168.11.221:/tmp
 Setup slave replication on Secondary (172.16.172.17):
 
 mysql –p
+
 drop database testRnd;
+
 create database testRnd;
+
 We need to restore the dumped DB "testRnd_28_12_2021.sql" which we got from Master 1.
+
 mysql -p testRnd < testRnd_28_12_2021.sql
 
 mysql> STOP SLAVE;
+
 mysql> RESET SLAVE;
+
 mysql> CHANGE MASTER TO MASTER_HOST = '192.168.11.222', MASTER_USER = 'rep', MASTER_PASSWORD = 'rep123', MASTER_LOG_FILE = 'mysql-bin.000003', MASTER_LOG_POS=1783;
 
-
 mysql> START SLAVE;
+
 mysql> show slave status\G;
 
 
