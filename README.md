@@ -1,6 +1,7 @@
 # Mysql-Replication
 
 https://www.technhit.in/setup-mysql-replication-master-slave-mode/
+
 Master 1 IP Address : 192.168.11.222
 Master 2 IP Address : 192.168.11.221
 
@@ -157,8 +158,8 @@ mysql>SHOW SLAVE STATUS\G
 
 
 
-If Replication Brek:
-====================
+If Replication Breaks:
+========================
 
 Unlock your db tables with read lock on Primay Server (172.16.172.16):
 
